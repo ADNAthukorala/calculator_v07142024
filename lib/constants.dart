@@ -1,8 +1,19 @@
 import 'package:flutter/material.dart';
 
+/// Background color
 const kColor01 = Color(0xFF000000);
-const kColor02 = Color(0xFFFFFFFF);
-const kColor03 = Color(0xFF222222);
-const kColor04 = Color(0xFF656D6E);
-const kColor05 = Color(0xFFF0FF5F);
-const kColor06 = Color(0xFFEDFFD4);
+
+/// Result color
+const kColor02 = Color(0xFFF3F3F3);
+
+/// Number buttons and result screen color
+const kColor03 = Color(0xFF4E626B);
+
+/// Operator buttons color
+const kColor04 = Color(0xFF849AA5);
+
+/// Equal button color
+const kColor05 = Color(0xFF26EAB9);
+
+/// Button title color
+const kColor06 = Color(0xFFF3F3F3);

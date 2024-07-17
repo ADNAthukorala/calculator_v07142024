@@ -359,7 +359,7 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
                             CmpCalculatorButton(
                               title: '=',
                               buttonRadius: buttonRadius,
-                              titleColor: kColor01,
+                              titleColor: kColor06,
                               buttonColor: kColor05,
                               onPressed: () {
                                 calculation('=');
