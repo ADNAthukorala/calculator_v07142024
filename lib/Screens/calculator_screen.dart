@@ -10,11 +10,113 @@ class CalculatorScreen extends StatefulWidget {
 }
 
 class _CalculatorScreenState extends State<CalculatorScreen> {
-  /// Cache number
-  String cacheNumber = '0';
+  dynamic text = '0';
+  double numOne = 0;
+  double numTwo = 0;
 
-  /// Actual number
-  String actualNumber = '0';
+  dynamic result = '';
+  dynamic finalResult = '';
+  dynamic opr = '';
+  dynamic preOpr = '';
+
+  void calculation(btnTitle) {
+    if (btnTitle == 'AC') {
+      text = '0';
+      numOne = 0;
+      numTwo = 0;
+      result = '';
+      finalResult = '0';
+      opr = '';
+      preOpr = '';
+    } else if (opr == '=' && btnTitle == '=') {
+      if (preOpr == '+') {
+        finalResult = add();
+      } else if (preOpr == '-') {
+        finalResult = sub();
+      } else if (preOpr == 'x') {
+        finalResult = mul();
+      } else if (preOpr == '÷') {
+        finalResult = div();
+      }
+    } else if (btnTitle == '+' ||
+        btnTitle == '-' ||
+        btnTitle == 'x' ||
+        btnTitle == '÷' ||
+        btnTitle == '=') {
+      if (numOne == 0) {
+        numOne = double.parse(result);
+      } else {
+        numTwo = double.parse(result);
+      }
+
+      if (opr == '+') {
+        finalResult = add();
+      } else if (opr == '-') {
+        finalResult = sub();
+      } else if (opr == 'x') {
+        finalResult = mul();
+      } else if (opr == '÷') {
+        finalResult = div();
+      }
+      preOpr = opr;
+      opr = btnTitle;
+      result = '';
+    } else if (btnTitle == '%') {
+      result = numOne / 100;
+      finalResult = doesContainDecimal(result);
+    } else if (btnTitle == '.') {
+      if (!result.toString().contains('.')) {
+        result = '$result.';
+      }
+      finalResult = result;
+    } else if (btnTitle == '+/-') {
+      result.toString().startsWith('-')
+          ? result = result.toString().substring(1)
+          : result = '-$result';
+      finalResult = result;
+    } else {
+      result = result + btnTitle;
+      finalResult = result;
+    }
+
+    setState(() {
+      text = finalResult;
+    });
+  }
+
+  String add() {
+    result = (numOne + numTwo).toString();
+    numOne = double.parse(result);
+    return doesContainDecimal(result);
+  }
+
+  String sub() {
+    result = (numOne - numTwo).toString();
+    numOne = double.parse(result);
+    return doesContainDecimal(result);
+  }
+
+  String mul() {
+    result = (numOne * numTwo).toString();
+    numOne = double.parse(result);
+    return doesContainDecimal(result);
+  }
+
+  String div() {
+    result = (numOne / numTwo).toString();
+    numOne = double.parse(result);
+    return doesContainDecimal(result);
+  }
+
+  String doesContainDecimal(dynamic result) {
+    if (result.toString().contains('.')) {
+      List<String> splitDecimal = result.toString().split('.');
+      if (!(int.parse(splitDecimal[1]) > 0)) {
+        return result = splitDecimal[0].toString();
+      }
+    }
+    return result;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -33,47 +135,29 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
             double buttonRadius = viewportConstraints.maxWidth / 9;
             return Column(
               children: [
-                /// Numbers screen
-                Container(
-                  constraints: const BoxConstraints(minHeight: 114.0),
+                /// Result screen
+                SizedBox(
                   height: viewportMaxHeight / 3,
                   width: double.maxFinite,
                   child: Card(
-                      margin: const EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 4.0),
-                      color: kColor03,
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30.0)),
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 4.0),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            /// Cache number
-                            Container(
-                              alignment: Alignment.centerRight,
-                              child: Text(
-                                cacheNumber,
-                                style: const TextStyle(
-                                    color: kColor04,
-                                    fontSize: 40.0,
-                                    fontWeight: FontWeight.w600),
-                              ),
-                            ),
-
-                            /// Actual number
-                            Container(
-                              alignment: Alignment.centerRight,
-                              child: Text(
-                                actualNumber,
-                                style: const TextStyle(
-                                    color: kColor02,
-                                    fontSize: 40.0,
-                                    fontWeight: FontWeight.w600),
-                              ),
-                            ),
-                          ],
+                    margin: const EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 4.0),
+                    color: kColor03,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30.0)),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                      child: Container(
+                        alignment: Alignment.bottomRight,
+                        child: Text(
+                          text,
+                          style: const TextStyle(
+                              color: kColor02,
+                              fontSize: 60.0,
+                              fontWeight: FontWeight.w600),
                         ),
-                      )),
+                      ),
+                    ),
+                  ),
                 ),
 
                 /// Buttons pad
@@ -91,39 +175,29 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
                               buttonRadius: buttonRadius,
                               buttonColor: kColor04,
                               onPressed: () {
-                                setState(() {
-                                  actualNumber = 'AC';
-                                });
+                                calculation('AC');
                               },
                             ),
                             CmpCalculatorButton(
-                              title: '( )',
+                              title: '+/-',
                               buttonRadius: buttonRadius,
                               buttonColor: kColor04,
                               onPressed: () {
-                                setState(() {
-                                  actualNumber = '( )';
-                                });
+                                calculation('+/-');
                               },
                             ),
                             CmpCalculatorButton(
                               title: '%',
                               buttonRadius: buttonRadius,
                               buttonColor: kColor04,
-                              onPressed: () {
-                                setState(() {
-                                  actualNumber = '%';
-                                });
-                              },
+                              onPressed: () {},
                             ),
                             CmpCalculatorButton(
                               title: '÷',
                               buttonRadius: buttonRadius,
                               buttonColor: kColor04,
                               onPressed: () {
-                                setState(() {
-                                  actualNumber = '÷';
-                                });
+                                calculation('÷');
                               },
                             ),
                           ],
@@ -140,9 +214,7 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
                               buttonRadius: buttonRadius,
                               buttonColor: kColor03,
                               onPressed: () {
-                                setState(() {
-                                  actualNumber = '7';
-                                });
+                                calculation('7');
                               },
                             ),
                             CmpCalculatorButton(
@@ -150,9 +222,7 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
                               buttonRadius: buttonRadius,
                               buttonColor: kColor03,
                               onPressed: () {
-                                setState(() {
-                                  actualNumber = '8';
-                                });
+                                calculation('8');
                               },
                             ),
                             CmpCalculatorButton(
@@ -160,9 +230,7 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
                               buttonRadius: buttonRadius,
                               buttonColor: kColor03,
                               onPressed: () {
-                                setState(() {
-                                  actualNumber = '9';
-                                });
+                                calculation('9');
                               },
                             ),
                             CmpCalculatorButton(
@@ -170,9 +238,7 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
                               buttonRadius: buttonRadius,
                               buttonColor: kColor04,
                               onPressed: () {
-                                setState(() {
-                                  actualNumber = 'x';
-                                });
+                                calculation('x');
                               },
                             ),
                           ],
@@ -189,9 +255,7 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
                               buttonRadius: buttonRadius,
                               buttonColor: kColor03,
                               onPressed: () {
-                                setState(() {
-                                  actualNumber = '4';
-                                });
+                                calculation('4');
                               },
                             ),
                             CmpCalculatorButton(
@@ -199,9 +263,7 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
                               buttonRadius: buttonRadius,
                               buttonColor: kColor03,
                               onPressed: () {
-                                setState(() {
-                                  actualNumber = '5';
-                                });
+                                calculation('5');
                               },
                             ),
                             CmpCalculatorButton(
@@ -209,9 +271,7 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
                               buttonRadius: buttonRadius,
                               buttonColor: kColor03,
                               onPressed: () {
-                                setState(() {
-                                  actualNumber = '6';
-                                });
+                                calculation('6');
                               },
                             ),
                             CmpCalculatorButton(
@@ -219,9 +279,7 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
                               buttonRadius: buttonRadius,
                               buttonColor: kColor04,
                               onPressed: () {
-                                setState(() {
-                                  actualNumber = '-';
-                                });
+                                calculation('-');
                               },
                             ),
                           ],
@@ -238,9 +296,7 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
                               buttonRadius: buttonRadius,
                               buttonColor: kColor03,
                               onPressed: () {
-                                setState(() {
-                                  actualNumber = '1';
-                                });
+                                calculation('1');
                               },
                             ),
                             CmpCalculatorButton(
@@ -248,9 +304,7 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
                               buttonRadius: buttonRadius,
                               buttonColor: kColor03,
                               onPressed: () {
-                                setState(() {
-                                  actualNumber = '2';
-                                });
+                                calculation('2');
                               },
                             ),
                             CmpCalculatorButton(
@@ -258,9 +312,7 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
                               buttonRadius: buttonRadius,
                               buttonColor: kColor03,
                               onPressed: () {
-                                setState(() {
-                                  actualNumber = '3';
-                                });
+                                calculation('3');
                               },
                             ),
                             CmpCalculatorButton(
@@ -268,9 +320,7 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
                               buttonRadius: buttonRadius,
                               buttonColor: kColor04,
                               onPressed: () {
-                                setState(() {
-                                  actualNumber = '+';
-                                });
+                                calculation('+');
                               },
                             ),
                           ],
@@ -287,9 +337,7 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
                               buttonRadius: buttonRadius,
                               buttonColor: kColor03,
                               onPressed: () {
-                                setState(() {
-                                  actualNumber = '0';
-                                });
+                                calculation('AC');
                               },
                             ),
                             CmpCalculatorButton(
@@ -297,9 +345,7 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
                               buttonRadius: buttonRadius,
                               buttonColor: kColor03,
                               onPressed: () {
-                                setState(() {
-                                  actualNumber = '0';
-                                });
+                                calculation('0');
                               },
                             ),
                             CmpCalculatorButton(
@@ -307,9 +353,7 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
                               buttonRadius: buttonRadius,
                               buttonColor: kColor03,
                               onPressed: () {
-                                setState(() {
-                                  actualNumber = '.';
-                                });
+                                calculation('.');
                               },
                             ),
                             CmpCalculatorButton(
@@ -318,9 +362,7 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
                               titleColor: kColor01,
                               buttonColor: kColor05,
                               onPressed: () {
-                                setState(() {
-                                  actualNumber = '=';
-                                });
+                                calculation('=');
                               },
                             ),
                           ],
