@@ -1,8 +1,12 @@
 import 'package:calculator_v07142024/Screens/calculator_screen.dart';
 import 'package:calculator_v07142024/constants.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 void main() {
+  SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+  ]);
   runApp(const MyApp());
 }
 
